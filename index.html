@@ -21,28 +21,48 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 30px;
+  padding: 24px;
 }
 
 .card {
-  max-width: 650px;
+  max-width: 700px;
 }
 
-h1, h2, p {
+/* 🔥 TEXTOS MAIORES NO MOBILE */
+h1 {
+  font-size: clamp(28px, 6vw, 40px);
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-size: clamp(22px, 5.5vw, 32px);
+  margin-bottom: 28px;
+  line-height: 1.4;
+}
+
+p {
+  font-size: clamp(18px, 4.8vw, 22px);
+  line-height: 1.6;
   margin-bottom: 22px;
-  line-height: 1.5;
 }
 
+/* 🔥 BOTÕES */
 button {
   background: transparent;
   border: 2px solid #ff4d6d;
   color: white;
-  padding: 14px 24px;
-  margin: 10px;
-  font-size: 16px;
+  padding: 16px 26px;
+  margin: 12px;
+  font-size: clamp(16px, 4.5vw, 18px);
   border-radius: 40px;
   cursor: pointer;
   transition: 0.3s;
+}
+
+/* Remove foco visual do iOS */
+button:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 button:hover {
@@ -99,51 +119,15 @@ button:hover {
 
 <script>
 const questions = [
-  {
-    q: "Meu amor, a nossa história foi importante pra você?",
-    yes: "Foi parte de quem eu sou",
-    no: "Não do jeito que deveria"
-  },
-  {
-    q: "Minha princesa, em algum momento você se sentiu verdadeiramente amada por mim?",
-    yes: "Me senti amada de verdade",
-    no: "Nem sempre consegui sentir isso"
-  },
-  {
-    q: "Minha morena, o que a gente viveu foi real pra você?",
-    yes: "Foi real e intenso",
-    no: "Foi confuso e doloroso"
-  },
-  {
-    q: "Meu amor, ainda existe algo aí dentro que sente a nossa conexão?",
-    yes: "Ainda existe sim",
-    no: "Acho que isso se perdeu"
-  },
-  {
-    q: "Minha princesa, quando pensa em nós, sente mais carinho do que dor?",
-    yes: "Sinto mais carinho",
-    no: "A dor ainda fala mais alto"
-  },
-  {
-    q: "Minha morena, você acredita que poderíamos amar de forma mais madura?",
-    yes: "Acredito que sim",
-    no: "Hoje não consigo ver isso"
-  },
-  {
-    q: "Meu amor, você acredita que amor também é escolha diária?",
-    yes: "Acredito e escolheria",
-    no: "Não sei se consigo"
-  },
-  {
-    q: "Minha princesa, mesmo com tudo, você ainda guarda algo bonito de nós?",
-    yes: "Guardo com carinho",
-    no: "Prefiro não olhar pra isso"
-  },
-  {
-    q: "Minha morena, você estaria disposta a tentar mais uma vez com consciência?",
-    yes: "Eu tentaria de verdade",
-    no: "Não consigo tentar novamente"
-  }
+  { q: "Meu amor, a nossa história foi importante pra você?", pos: "Foi muito mais do que imagina", neg: "Não como deveria" },
+  { q: "Minha princesa, em algum momento você se sentiu verdadeiramente amada por mim?", pos: "Sim, eu senti isso", neg: "Nem sempre" },
+  { q: "Minha morena, o que a gente viveu foi real pra você?", pos: "Foi real e intenso", neg: "Foi confuso" },
+  { q: "Meu amor, ainda existe algo aí dentro que sente a nossa conexão?", pos: "Ainda sinto sim", neg: "Acho que não" },
+  { q: "Minha princesa, quando pensa em nós, o sentimento que vem é mais carinho do que dor?", pos: "Ainda é carinho", neg: "Hoje dói mais" },
+  { q: "Minha morena, você já pensou que, com maturidade, poderíamos fazer diferente?", pos: "Já pensei nisso", neg: "Não consigo ver" },
+  { q: "Meu amor, você acredita que amor também é escolha e permanência?", pos: "Acredito de verdade", neg: "Hoje não" },
+  { q: "Minha princesa, mesmo com tudo, você ainda guarda carinho por mim?", pos: "Guardo sim", neg: "Prefiro não" },
+  { q: "Minha morena, você acha que a nossa história merecia uma última conversa sincera?", pos: "Talvez mereça", neg: "Acho que não" }
 ];
 
 let index = 0;
@@ -157,7 +141,7 @@ function heartsRain(intensity = 30) {
     const h = document.createElement("span");
     h.innerHTML = "💖";
     h.style.left = Math.random() * 100 + "%";
-    h.style.fontSize = (16 + Math.random() * 24) + "px";
+    h.style.fontSize = (18 + Math.random() * 26) + "px";
     rain.appendChild(h);
     setTimeout(() => h.remove(), 2500);
   }
@@ -167,78 +151,74 @@ function showQuestion() {
   const q = questions[index];
   card.innerHTML = `
     <h2>${q.q}</h2>
-    <button onclick="answer(true)">${q.yes}</button>
-    <button onclick="answer(false)">${q.no}</button>
+    <button onclick="answer(true)">${q.pos}</button>
+    <button onclick="answer(false)">${q.neg}</button>
   `;
 }
 
 function answer(isPositive) {
+  // 🔥 remove foco do botão antes de avançar
+  document.activeElement.blur();
+
   if (isPositive) {
     score++;
     heartsRain(45);
   }
-  index++;
-  index < questions.length ? showQuestion() : showReview();
-}
 
-function showReview() {
-  card.innerHTML = `
-    <h1>Antes de tudo</h1>
-    <p>
-      Cada resposta foi um sentimento.<br>
-      O que aparece agora é reflexo do que existe aí dentro.
-    </p>
-    <button onclick="showFinal()">Ver o que isso diz sobre nós</button>
-  `;
+  index++;
+  index < questions.length ? showQuestion() : showFinal();
 }
 
 function showFinal() {
-  const percent = score / questions.length;
-
-  if (percent >= 0.6) {
+  if (score >= Math.ceil(questions.length / 2)) {
     card.innerHTML = `
       <h1>Eu ainda escolho você</h1>
       <p>
-        Eu sei que erramos.<br>
-        Sei que nos machucamos.
+        Eu sei que erramos. Sei que nos machucamos.
+        Mas nada disso apaga o amor que eu senti por você.
       </p>
       <p>
-        Mas o amor que eu sinto por você é real,
-        não desistiu e não se perdeu.
+        O que eu sinto não é impulso.
+        É escolha, consciência e vontade de fazer diferente.
       </p>
       <p>
         Se ainda existir algo aí dentro,
-        eu estou aqui disposto a lutar por nós.
+        eu estou aqui disposto a conversar,
+        amadurecer e lutar por nós.
       </p>
       <p>❤️</p>
     `;
-    heartsRain(80);
+    heartsRain(70);
   } else {
     card.innerHTML = `
-      <h1>Meu amor por você é verdadeiro</h1>
+      <h1>Meu amor por você é real</h1>
       <p>
         Mesmo que nossos caminhos não sigam juntos,
-        o que eu senti por você foi real.
+        o que eu senti por você foi verdadeiro.
       </p>
       <p>
-        Te amar também é respeitar sua decisão
-        e desejar que você seja feliz,
-        mesmo que isso não seja ao meu lado.
+        Eu te amo o suficiente para respeitar seu tempo,
+        sua decisão e desejar que você seja feliz,
+        inteira e em paz.
+      </p>
+      <p>
+        Você sempre vai ocupar um lugar bonito
+        na minha história.
       </p>
       <p>🤍</p>
     `;
-    heartsRain(25);
+    heartsRain(30);
   }
 }
 
 function createBackgroundHearts() {
   const bg = document.getElementById("background");
-  for (let i = 0; i < 55; i++) {
+  for (let i = 0; i < 60; i++) {
     const h = document.createElement("div");
     h.className = "heart";
     h.innerHTML = "❤";
     h.style.left = Math.random() * 100 + "%";
-    h.style.fontSize = (10 + Math.random() * 22) + "px";
+    h.style.fontSize = (12 + Math.random() * 24) + "px";
     h.style.animationDuration = (8 + Math.random() * 6) + "s";
     bg.appendChild(h);
   }
